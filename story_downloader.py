@@ -14,6 +14,7 @@ import sys
 import time
 
 import requests
+import secrets
 
 
 def create_database(db_file: pathlib.Path):
@@ -48,13 +49,12 @@ def add_location(db_file: pathlib.Path, lat: float, lon: float, zoom: float, lab
 
 
 def randomize_location(latitude, longitude, radius):
-    import random
     import math
 
     # https://gis.stackexchange.com/a/68275
     deg = radius / 111000.0 # convert from meters to degrees
-    u = random.random()
-    v = random.random()
+    u = secrets.SystemRandom().random()
+    v = secrets.SystemRandom().random()
     w = deg * math.sqrt(u)
     t = 2 * math.pi * v
     x = w * math.cos(t)
