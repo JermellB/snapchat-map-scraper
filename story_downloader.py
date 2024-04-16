@@ -69,7 +69,7 @@ def get_latest_tileset():
     headers = {
         'content-type': 'application/json'
     }
-    resp = requests.post(url, headers=headers, json={})
+    resp = requests.post(url, headers=headers, json={}, timeout=60)
     resp.raise_for_status()
     return resp.json()
 
@@ -87,7 +87,7 @@ def download_file(file: pathlib.Path, url: str):
     tries = 3
     while tries > 0:
         try:
-            with requests.get(url, stream=True) as resp:
+            with requests.get(url, stream=True, timeout=60) as resp:
                 resp.raise_for_status()
                 with open(str(file), 'wb') as f:
                     for chunk in resp.iter_content(chunk_size=8192):
@@ -163,7 +163,7 @@ def scrape_location(db_file: pathlib.Path, location_id, latitude, longitude, zoo
     resp = None
     while tries > 0:
         try:
-            resp = requests.post(url, json=data, headers=headers)
+            resp = requests.post(url, json=data, headers=headers, timeout=60)
             resp.raise_for_status()
             break
         except (requests.HTTPError, requests.exceptions.ConnectionError):
