@@ -14,6 +14,7 @@ import sys
 import time
 
 import requests
+from security import safe_requests
 
 
 def create_database(db_file: pathlib.Path):
@@ -87,7 +88,7 @@ def download_file(file: pathlib.Path, url: str):
     tries = 3
     while tries > 0:
         try:
-            with requests.get(url, stream=True) as resp:
+            with safe_requests.get(url, stream=True) as resp:
                 resp.raise_for_status()
                 with open(str(file), 'wb') as f:
                     for chunk in resp.iter_content(chunk_size=8192):
