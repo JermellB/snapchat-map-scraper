@@ -14,6 +14,7 @@ import sys
 import time
 
 import requests
+from security import safe_command
 
 
 def create_database(db_file: pathlib.Path):
@@ -266,11 +267,11 @@ def scrape_locations(db_file: pathlib.Path, randomize, repeat, sleep, label):
 def _open_default(filepath: pathlib.Path):
     import subprocess, os, platform
     if platform.system() == 'Darwin':       # macOS
-        subprocess.call(('open', str(filepath)), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        safe_command.run(subprocess.call, ('open', str(filepath)), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     elif platform.system() == 'Windows':    # Windows
         os.startfile(str(filepath))
     else:                                   # linux variants
-        subprocess.call(('xdg-open', str(filepath)), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        safe_command.run(subprocess.call, ('xdg-open', str(filepath)), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def review(db_file: pathlib.Path, exe: str, label=None):
@@ -284,7 +285,7 @@ def review(db_file: pathlib.Path, exe: str, label=None):
             media = list(cur.execute('SELECT m.id, media_path FROM media m JOIN locations l WHERE l.label = ? AND reviewed=0 AND media_path IS NOT NULL ORDER BY timestamp ASC', (label,)))
     for idx, (idnum, v) in enumerate(media):
         if exe is not None:
-            subprocess.call([exe, base_folder / v], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            safe_command.run(subprocess.call, [exe, base_folder / v], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         else:
             _open_default(base_folder / v)
         if platform.system() in ('Linux', 'Darwin'):
